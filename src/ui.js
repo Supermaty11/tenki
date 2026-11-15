@@ -171,9 +171,29 @@ function renderSummary(place, stats, onToggleFavorite) {
   const today = stats.today
   const nowCategory = weatherCategory(now)
 
-  const main = document.createElement('p')
-  main.className = `stat-main ${weatherClass(nowCategory)}`
-  main.textContent = weatherLabel(now)
+  const hero = document.createElement('div')
+  hero.className = 'stat-hero'
+
+  const mainRow = document.createElement('div')
+  mainRow.className = 'stat-main-row'
+
+  const weather = document.createElement('p')
+  weather.className = `stat-main ${weatherClass(nowCategory)}`
+  weather.textContent = weatherLabel(now)
+
+  const temp = document.createElement('p')
+  temp.className = 'stat-temp'
+  temp.textContent = fmtTemp(now?.temperature)
+
+  mainRow.append(weather, temp)
+  hero.append(mainRow)
+
+  if (stats.outlook) {
+    const outlook = document.createElement('p')
+    outlook.className = 'stat-outlook'
+    outlook.textContent = stats.outlook
+    hero.append(outlook)
+  }
 
   const agree = document.createElement('p')
   agree.className = 'stat-agree'
@@ -181,10 +201,7 @@ function renderSummary(place, stats, onToggleFavorite) {
 
   const meta = document.createElement('p')
   meta.className = 'stat-meta'
-  meta.textContent = [
-    `気温 ${fmtTemp(now?.temperature)}`,
-    `降水確率 ${fmtProb(now?.precipProb)}`,
-  ].join(' · ')
+  meta.textContent = `降水確率 ${fmtProb(now?.precipProb)}`
 
   const todayLine = document.createElement('p')
   todayLine.className = 'stat-today'
@@ -194,7 +211,7 @@ function renderSummary(place, stats, onToggleFavorite) {
     todayLine.textContent = '今日の日次集計はありません。'
   }
 
-  summary.append(heading, placeEl, main, agree, meta, todayLine)
+  summary.append(heading, placeEl, hero, agree, meta, todayLine)
 }
 
 function buildTimelineTable(headers, rows, categories) {

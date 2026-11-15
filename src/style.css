@@ -256,13 +256,33 @@ section {
   font-size: 0.95rem;
 }
 
-.stat-main {
-  display: inline-block;
+.stat-hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem 1rem;
   margin-top: 0.15rem;
+}
+
+.stat-main-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.stat-main,
+.stat-temp {
+  margin: 0;
   padding: 0.2rem 0.55rem;
   border-radius: 0.45rem;
   font-size: 1.5rem;
   font-weight: 600;
+  line-height: 1.2;
+}
+
+.stat-temp {
+  background: color-mix(in srgb, var(--bg-accent) 55%, var(--surface));
 }
 
 .stat-main.wx-晴 { background: var(--wx-晴); }
@@ -270,6 +290,14 @@ section {
 .stat-main.wx-雨 { background: var(--wx-雨); }
 .stat-main.wx-雪 { background: var(--wx-雪); }
 .stat-main.wx-雷 { background: var(--wx-雷); }
+
+.stat-outlook {
+  flex: 1 1 12rem;
+  margin: 0;
+  color: var(--text);
+  font-size: 0.98rem;
+  line-height: 1.4;
+}
 
 .stat-agree,
 .stat-meta,

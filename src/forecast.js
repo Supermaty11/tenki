@@ -1,5 +1,6 @@
 import { MODEL_IDS } from './models.js'
 import { majorityWeather, median, formatAgreement, formatAgreementShort } from './aggregate.js'
+import { buildOutlook } from './outlook.js'
 
 const FORECAST_URL = 'https://api.open-meteo.com/v1/forecast'
 
@@ -104,6 +105,7 @@ export function buildStats(forecast, { now = new Date() } = {}) {
     today: todayDaily,
     hourlyToday: todayHourly,
     weekly: dailyStats,
+    outlook: buildOutlook(todayHourly, current),
   }
 }
 
