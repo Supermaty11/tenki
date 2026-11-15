@@ -375,7 +375,18 @@ section {
 .stat-today {
   display: flex;
   flex-direction: column;
-  gap: 0.1rem;
+  align-items: flex-start;
+  gap: 0.15rem;
+}
+
+.stat-today-weather,
+.stat-today-temp,
+.stat-today-precip {
+  display: block;
+}
+
+.stat-today-temp {
+  white-space: nowrap;
 }
 
 .place-list {

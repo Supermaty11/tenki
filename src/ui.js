@@ -248,16 +248,22 @@ function renderSummary(place, stats, onToggleFavorite) {
   meta.className = 'stat-meta'
   meta.textContent = `降水確率 ${fmtProb(now?.precipProb)}`
 
-  const todayLine = document.createElement('p')
+  const todayLine = document.createElement('div')
   todayLine.className = 'stat-today'
   if (today) {
-    const line1 = document.createElement('span')
-    line1.className = 'stat-today-main'
-    line1.textContent = `今日 ${weatherLabel(today)}（${today.agreement}） / ${fmtTemp(today.tempMin)}〜${fmtTemp(today.tempMax)}`
-    const line2 = document.createElement('span')
-    line2.className = 'stat-today-precip'
-    line2.textContent = `降水 ${fmtProb(today.precipProb)}`
-    todayLine.append(line1, line2)
+    const weatherLine = document.createElement('div')
+    weatherLine.className = 'stat-today-weather'
+    weatherLine.textContent = `今日 ${weatherLabel(today)}（${today.agreement}）`
+
+    const tempLine = document.createElement('div')
+    tempLine.className = 'stat-today-temp'
+    tempLine.textContent = `${fmtTemp(today.tempMin)}〜${fmtTemp(today.tempMax)}`
+
+    const precipLine = document.createElement('div')
+    precipLine.className = 'stat-today-precip'
+    precipLine.textContent = `降水 ${fmtProb(today.precipProb)}`
+
+    todayLine.append(weatherLine, tempLine, precipLine)
   } else {
     todayLine.textContent = '今日の日次集計はありません。'
   }
