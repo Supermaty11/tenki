@@ -14,6 +14,11 @@
   --sticky-bg: #f3ece3;
   --table-line: #ddd0c0;
   --shadow: color-mix(in srgb, #2c241c 8%, transparent);
+  --wx-晴: #f4d5c8;
+  --wx-曇: #d7d4cf;
+  --wx-雨: #c9d9e8;
+  --wx-雪: #dde8f0;
+  --wx-雷: #e6d8ef;
 }
 
 :root[data-theme='moss'] {
@@ -30,6 +35,11 @@
   --sticky-bg: #eef3e9;
   --table-line: #c9d5c2;
   --shadow: color-mix(in srgb, #243022 8%, transparent);
+  --wx-晴: #f0d6c4;
+  --wx-曇: #d2d7d0;
+  --wx-雨: #c5d7e2;
+  --wx-雪: #d7e4ec;
+  --wx-雷: #ddd4e8;
 }
 
 :root[data-theme='clay'] {
@@ -46,6 +56,11 @@
   --sticky-bg: #f2ebe5;
   --table-line: #d8c9bc;
   --shadow: color-mix(in srgb, #322820 8%, transparent);
+  --wx-晴: #f3d2c4;
+  --wx-曇: #d8d2cb;
+  --wx-雨: #c8d6e4;
+  --wx-雪: #dbe6ee;
+  --wx-雷: #e4d5ec;
 }
 
 :root {
@@ -186,9 +201,19 @@ section {
 }
 
 .stat-main {
+  display: inline-block;
+  margin-top: 0.15rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 0.45rem;
   font-size: 1.5rem;
   font-weight: 600;
 }
+
+.stat-main.wx-晴 { background: var(--wx-晴); }
+.stat-main.wx-曇 { background: var(--wx-曇); }
+.stat-main.wx-雨 { background: var(--wx-雨); }
+.stat-main.wx-雪 { background: var(--wx-雪); }
+.stat-main.wx-雷 { background: var(--wx-雷); }
 
 .stat-agree,
 .stat-meta,
@@ -267,6 +292,17 @@ section {
   z-index: 2;
   background: color-mix(in srgb, var(--surface) 85%, var(--bg-accent));
 }
+
+.wx-timeline th.wx-晴,
+.wx-timeline td.wx-晴 { background: var(--wx-晴); }
+.wx-timeline th.wx-曇,
+.wx-timeline td.wx-曇 { background: var(--wx-曇); }
+.wx-timeline th.wx-雨,
+.wx-timeline td.wx-雨 { background: var(--wx-雨); }
+.wx-timeline th.wx-雪,
+.wx-timeline td.wx-雪 { background: var(--wx-雪); }
+.wx-timeline th.wx-雷,
+.wx-timeline td.wx-雷 { background: var(--wx-雷); }
 
 .site-links {
   display: flex;

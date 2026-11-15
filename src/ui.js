@@ -1,3 +1,11 @@
+const WEATHER_ICONS = {
+  晴: '☀️',
+  曇: '☁️',
+  雨: '☔️',
+  雪: '❄️',
+  雷: '⚡️',
+}
+
 function fmtTemp(value) {
   if (value == null) return '—'
   const n = Math.round(Number(value) * 10) / 10
@@ -22,13 +30,23 @@ function fmtDate(isoDate) {
   }).format(d)
 }
 
+function weatherCategory(row) {
+  return row?.weather?.category || null
+}
+
 function weatherLabel(row) {
-  if (!row?.weather?.category) return '—'
-  return row.weather.category
+  const category = weatherCategory(row)
+  if (!category) return '—'
+  const icon = WEATHER_ICONS[category] || ''
+  return icon ? `${icon}${category}` : category
 }
 
 function agreementShort(row) {
   return row?.agreementShort || '—'
+}
+
+function weatherClass(category) {
+  return category ? `wx-${category}` : ''
 }
 
 export function renderStatus(message) {
@@ -95,10 +113,11 @@ function renderSummary(place, stats) {
 
   const now = stats.current
   const today = stats.today
+  const nowCategory = weatherCategory(now)
 
   const main = document.createElement('p')
-  main.className = 'stat-main'
-  main.textContent = `${weatherLabel(now)}（いま）`
+  main.className = `stat-main ${weatherClass(nowCategory)}`
+  main.textContent = weatherLabel(now)
 
   const agree = document.createElement('p')
   agree.className = 'stat-agree'
@@ -124,10 +143,11 @@ function renderSummary(place, stats) {
 
 /**
  * 時系列を横軸にした表を作る。
- * @param {Array<{ label: string, values: string[] }>} rows
  * @param {string[]} headers
+ * @param {Array<{ label: string, values: string[] }>} rows
+ * @param {(string|null)[]} categories 列ごとの天気カテゴリ
  */
-function buildTimelineTable(headers, rows) {
+function buildTimelineTable(headers, rows, categories) {
   const wrap = document.createElement('div')
   wrap.className = 'timeline-scroll'
   wrap.setAttribute('tabindex', '0')
@@ -142,11 +162,13 @@ function buildTimelineTable(headers, rows) {
   corner.className = 'sticky-col'
   corner.textContent = ''
   headRow.append(corner)
-  for (const header of headers) {
+  headers.forEach((header, i) => {
     const th = document.createElement('th')
     th.textContent = header
+    const cls = weatherClass(categories[i])
+    if (cls) th.classList.add(cls)
     headRow.append(th)
-  }
+  })
   thead.append(headRow)
 
   const tbody = document.createElement('tbody')
@@ -157,11 +179,13 @@ function buildTimelineTable(headers, rows) {
     label.className = 'sticky-col'
     label.textContent = row.label
     tr.append(label)
-    for (const value of row.values) {
+    row.values.forEach((value, i) => {
       const td = document.createElement('td')
       td.textContent = value
+      const cls = weatherClass(categories[i])
+      if (cls) td.classList.add(cls)
       tr.append(td)
-    }
+    })
     tbody.append(tr)
   }
 
@@ -185,12 +209,17 @@ function renderHourly(rows) {
   }
 
   const headers = rows.map((row) => fmtHour(row.time))
-  const table = buildTimelineTable(headers, [
-    { label: '天気', values: rows.map(weatherLabel) },
-    { label: '気温', values: rows.map((row) => fmtTemp(row.temperature)) },
-    { label: '降水', values: rows.map((row) => fmtProb(row.precipProb)) },
-    { label: '一致', values: rows.map(agreementShort) },
-  ])
+  const categories = rows.map(weatherCategory)
+  const table = buildTimelineTable(
+    headers,
+    [
+      { label: '天気', values: rows.map(weatherLabel) },
+      { label: '気温', values: rows.map((row) => fmtTemp(row.temperature)) },
+      { label: '降水', values: rows.map((row) => fmtProb(row.precipProb)) },
+      { label: '一致', values: rows.map(agreementShort) },
+    ],
+    categories,
+  )
   table.setAttribute('aria-label', '時間別予報')
   section.append(table)
 }
@@ -210,12 +239,17 @@ function renderWeekly(rows) {
   }
 
   const headers = rows.map((row) => fmtDate(row.date))
-  const table = buildTimelineTable(headers, [
-    { label: '天気', values: rows.map(weatherLabel) },
-    { label: '気温', values: rows.map((row) => `${fmtTemp(row.tempMin)}/${fmtTemp(row.tempMax)}`) },
-    { label: '降水', values: rows.map((row) => fmtProb(row.precipProb)) },
-    { label: '一致', values: rows.map(agreementShort) },
-  ])
+  const categories = rows.map(weatherCategory)
+  const table = buildTimelineTable(
+    headers,
+    [
+      { label: '天気', values: rows.map(weatherLabel) },
+      { label: '気温', values: rows.map((row) => `${fmtTemp(row.tempMin)}/${fmtTemp(row.tempMax)}`) },
+      { label: '降水', values: rows.map((row) => fmtProb(row.precipProb)) },
+      { label: '一致', values: rows.map(agreementShort) },
+    ],
+    categories,
+  )
   table.setAttribute('aria-label', '週間予報')
   section.append(table)
 }
