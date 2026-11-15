@@ -411,13 +411,13 @@ section {
 
 .wx-timeline th.day-break,
 .wx-timeline td.day-break {
-  box-shadow: inset 2px 0 0 var(--accent);
+  box-shadow: inset 1px 0 0 var(--border);
 }
 
-.wx-timeline th.is-now,
-.wx-timeline td.is-now {
-  outline: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
-  outline-offset: -1px;
+.wx-timeline thead th.is-now {
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
 }
 
 .place-list {
