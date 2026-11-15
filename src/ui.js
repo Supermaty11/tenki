@@ -178,7 +178,7 @@ export function renderEmptyResults() {
 
 export function renderStats(place, stats, { onToggleFavorite } = {}) {
   renderSummary(place, stats, onToggleFavorite)
-  renderHourly(stats.hourlyToday)
+  renderHourly(stats)
   renderWeekly(stats.weekly)
   renderLinks(place)
   renderAttribution()
@@ -269,9 +269,37 @@ function renderSummary(place, stats, onToggleFavorite) {
   }
 
   summary.append(heading, placeEl, hero, agree, meta, todayLine)
+
+  const tomorrow = stats.tomorrow
+  if (tomorrow) {
+    const tomorrowBlock = document.createElement('div')
+    tomorrowBlock.className = 'stat-tomorrow'
+
+    const weatherLine = document.createElement('div')
+    weatherLine.className = 'stat-tomorrow-weather'
+    weatherLine.textContent = `明日 ${weatherLabel(tomorrow)}`
+
+    const tempLine = document.createElement('div')
+    tempLine.className = 'stat-tomorrow-temp'
+    tempLine.textContent = `${fmtTemp(tomorrow.tempMin)}〜${fmtTemp(tomorrow.tempMax)}`
+
+    const precipLine = document.createElement('div')
+    precipLine.className = 'stat-tomorrow-precip'
+    precipLine.textContent = `降水 ${fmtProb(tomorrow.precipProb)}`
+
+    tomorrowBlock.append(weatherLine, tempLine, precipLine)
+    summary.append(tomorrowBlock)
+  }
 }
 
-function buildTimelineTable(headers, rows, categories) {
+function fmtHourHeader(isoLocal, localDate) {
+  const date = isoLocal.slice(0, 10)
+  const hour = fmtHour(isoLocal)
+  if (date === localDate) return hour
+  return `明${hour}`
+}
+
+function buildTimelineTable(headers, rows, categories, { scrollToIndex = 0, dayBreakIndexes = [] } = {}) {
   const wrap = document.createElement('div')
   wrap.className = 'timeline-scroll'
   wrap.setAttribute('tabindex', '0')
@@ -291,6 +319,8 @@ function buildTimelineTable(headers, rows, categories) {
     th.textContent = header
     const cls = weatherClass(categories[i])
     if (cls) th.classList.add(cls)
+    if (dayBreakIndexes.includes(i)) th.classList.add('day-break')
+    if (i === scrollToIndex) th.classList.add('is-now')
     headRow.append(th)
   })
   thead.append(headRow)
@@ -308,6 +338,8 @@ function buildTimelineTable(headers, rows, categories) {
       td.textContent = value
       const cls = weatherClass(categories[i])
       if (cls) td.classList.add(cls)
+      if (dayBreakIndexes.includes(i)) td.classList.add('day-break')
+      if (i === scrollToIndex) td.classList.add('is-now')
       tr.append(td)
     })
     tbody.append(tr)
@@ -315,25 +347,51 @@ function buildTimelineTable(headers, rows, categories) {
 
   table.append(thead, tbody)
   wrap.append(table)
+
+  requestAnimationFrame(() => {
+    scrollTimelineToIndex(wrap, scrollToIndex)
+  })
+
   return wrap
 }
 
-function renderHourly(rows) {
+function scrollTimelineToIndex(wrap, index) {
+  const table = wrap.querySelector('table')
+  if (!table) return
+  const headerCells = table.querySelectorAll('thead th')
+  const cell = headerCells[index + 1]
+  if (!cell) return
+  const sticky = table.querySelector('thead .sticky-col')
+  const stickyWidth = sticky ? sticky.getBoundingClientRect().width : 0
+  wrap.scrollLeft = Math.max(0, cell.offsetLeft - stickyWidth - 4)
+}
+
+function renderHourly(stats) {
   const section = document.querySelector('#hourly')
   section.replaceChildren()
   const h2 = document.createElement('h2')
   h2.textContent = '時間別'
   section.append(h2)
 
+  const rows = stats.hourlyNear || []
   if (!rows.length) {
     const p = document.createElement('p')
-    p.textContent = '今日の時間別データがありません。'
+    p.textContent = '時間別データがありません。'
     section.append(p)
     return
   }
 
-  const headers = rows.map((row) => fmtHour(row.time))
+  const localDate = stats.localDate
+  const headers = rows.map((row) => fmtHourHeader(row.time, localDate))
   const categories = rows.map(weatherCategory)
+  const dayBreakIndexes = rows
+    .map((row, i) => (row.time.startsWith(localDate) ? -1 : i))
+    .filter((i) => i >= 0)
+  const scrollToIndex = Math.min(
+    Math.max(stats.currentHourIndex || 0, 0),
+    rows.length - 1,
+  )
+
   const table = buildTimelineTable(
     headers,
     [
@@ -343,8 +401,9 @@ function renderHourly(rows) {
       { label: '一致', values: rows.map(agreementShort) },
     ],
     categories,
+    { scrollToIndex, dayBreakIndexes },
   )
-  table.setAttribute('aria-label', '時間別予報')
+  table.setAttribute('aria-label', '時間別予報（今日・明日）')
   section.append(table)
 }
 

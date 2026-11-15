@@ -389,6 +389,37 @@ section {
   white-space: nowrap;
 }
 
+.stat-tomorrow {
+  margin-top: 0.85rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  color: var(--muted);
+}
+
+.stat-tomorrow-weather {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.stat-tomorrow-temp {
+  white-space: nowrap;
+}
+
+.wx-timeline th.day-break,
+.wx-timeline td.day-break {
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+
+.wx-timeline th.is-now,
+.wx-timeline td.is-now {
+  outline: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  outline-offset: -1px;
+}
+
 .place-list {
   margin: 0.5rem 0 0;
   padding: 0;

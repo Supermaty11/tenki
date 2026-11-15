@@ -89,23 +89,39 @@ export function buildStats(forecast, { now = new Date() } = {}) {
   const hourlyStats = hourly.time.map((_, i) => aggregateHour(hourly, i))
   const dailyStats = daily.time.map((_, i) => aggregateDay(daily, i))
 
-  const todayHourly = hourlyStats.filter((h) => h.time.startsWith(localDate))
-  const todayDaily = dailyStats.find((d) => d.date === localDate) || dailyStats[0]
+  const todayIndex = dailyStats.findIndex((d) => d.date === localDate)
+  const todayDaily = (todayIndex >= 0 ? dailyStats[todayIndex] : null) || dailyStats[0]
+  const tomorrowDaily = todayIndex >= 0 ? dailyStats[todayIndex + 1] || null : null
+  const tomorrowDate = tomorrowDaily?.date || null
+
+  const hourlyNear = hourlyStats.filter((h) => {
+    const date = h.time.slice(0, 10)
+    return date === localDate || (tomorrowDate && date === tomorrowDate)
+  })
 
   const current =
     hourlyStats.find((h) => h.time === localHour)
-    || todayHourly.find((h) => h.time >= localHour)
-    || todayHourly[0]
+    || hourlyNear.find((h) => h.time >= localHour)
+    || hourlyNear[0]
     || hourlyStats[0]
+
+  const currentHourIndex = Math.max(
+    0,
+    hourlyNear.findIndex((h) => h.time === current?.time),
+  )
 
   return {
     timezone,
     localDate,
+    tomorrowDate,
     current,
     today: todayDaily,
-    hourlyToday: todayHourly,
+    tomorrow: tomorrowDaily,
+    hourlyToday: hourlyNear.filter((h) => h.time.startsWith(localDate)),
+    hourlyNear,
+    currentHourIndex,
     weekly: dailyStats,
-    outlook: buildOutlook(todayHourly, current),
+    outlook: buildOutlook(hourlyNear, current),
   }
 }
 
