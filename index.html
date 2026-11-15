@@ -1,23 +1,44 @@
 <!doctype html>
-<html lang="ja">
+<html lang="ja" data-theme="earth">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>天気</title>
+    <title>Statistical Weather</title>
+    <meta name="description" content="7モデル合意の統計天気" />
+    <meta property="og:title" content="Statistical Weather" />
+    <meta property="og:description" content="7モデル合意の統計天気" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Statistical Weather" />
+    <meta name="twitter:description" content="7モデル合意の統計天気" />
   </head>
   <body>
     <main id="app">
       <header>
-        <h1>天気</h1>
+        <div class="topbar">
+          <h1>天気</h1>
+          <div class="theme-picker">
+            <label for="theme">テーマ</label>
+            <select id="theme" name="theme"></select>
+          </div>
+        </div>
         <form id="search">
           <label for="query">地点</label>
-          <input id="query" name="query" type="search" placeholder="地点を検索" autocomplete="off" />
+          <div class="search-field">
+            <input id="query" name="query" type="search" placeholder="地点を検索" autocomplete="off" />
+            <button id="clear" type="button" class="clear-btn" hidden aria-label="入力と結果をクリア">×</button>
+            <ul id="suggestions" class="suggestions" hidden role="listbox" aria-label="地点候補"></ul>
+          </div>
           <button type="submit">検索</button>
         </form>
       </header>
+      <section id="favorites">
+        <h2>お気に入り</h2>
+        <p>地点を表示したあと、☆で登録できます。</p>
+      </section>
       <section id="summary">
-        <h2>統計天気</h2>
+        <h2>Statistical Weather</h2>
         <p>検索した地点の結果がここに出ます。</p>
       </section>
       <section id="hourly">
@@ -30,7 +51,6 @@
       </section>
       <section id="links">
         <h2>各サイト</h2>
-        <p>予報の取得はせず、サイトを開くボタンを置きます。</p>
       </section>
     </main>
     <script type="module" src="/src/main.js"></script>
