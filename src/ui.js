@@ -100,7 +100,7 @@ export function renderStatus(message) {
   const summary = document.querySelector('#summary')
   summary.replaceChildren()
   const h2 = document.createElement('h2')
-  h2.textContent = '統計天気'
+  h2.textContent = 'Statistical Weather'
   const p = document.createElement('p')
   p.textContent = message
   summary.append(h2, p)
@@ -199,7 +199,7 @@ function renderSummary(place, stats, onToggleFavorite) {
   heading.className = 'summary-heading'
 
   const h2 = document.createElement('h2')
-  h2.textContent = '統計天気'
+  h2.textContent = 'Statistical Weather'
   heading.append(h2)
 
   if (onToggleFavorite) {
