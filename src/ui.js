@@ -170,9 +170,7 @@ export function renderEmptyResults() {
   links.replaceChildren()
   const h2 = document.createElement('h2')
   h2.textContent = '各サイト'
-  const p = document.createElement('p')
-  p.textContent = '予報の取得はせず、サイトを開くボタンを置きます。'
-  links.append(h2, p)
+  links.append(h2)
 
   const attribution = document.querySelector('#attribution')
   if (attribution) attribution.remove()
@@ -373,8 +371,6 @@ function renderLinks(place) {
   section.replaceChildren()
   const h2 = document.createElement('h2')
   h2.textContent = '各サイト'
-  const note = document.createElement('p')
-  note.textContent = '予報文は取得せず、地点つきのページを開きます。'
   const nav = document.createElement('nav')
   nav.className = 'site-links'
 
@@ -387,7 +383,7 @@ function renderLinks(place) {
     nav.append(a)
   }
 
-  section.append(h2, note, nav)
+  section.append(h2, nav)
 }
 
 function renderAttribution() {
