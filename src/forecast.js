@@ -115,13 +115,36 @@ export function buildStats(forecast, { now = new Date() } = {}) {
     localDate,
     tomorrowDate,
     current,
-    today: todayDaily,
-    tomorrow: tomorrowDaily,
+    today: withAverageTemp(todayDaily, hourlyStats),
+    tomorrow: withAverageTemp(tomorrowDaily, hourlyStats),
     hourlyToday: hourlyNear.filter((h) => h.time.startsWith(localDate)),
     hourlyNear,
     currentHourIndex,
     weekly: dailyStats,
     outlook: buildOutlook(hourlyNear, current),
+  }
+}
+
+function averageHourlyTemp(hourlyStats, date) {
+  const temps = hourlyStats
+    .filter((row) => row.time.startsWith(date))
+    .map((row) => row.temperature)
+    .filter((value) => value != null && !Number.isNaN(Number(value)))
+    .map(Number)
+  if (!temps.length) return null
+  return temps.reduce((sum, value) => sum + value, 0) / temps.length
+}
+
+function withAverageTemp(day, hourlyStats) {
+  if (!day) return null
+  const fromHourly = averageHourlyTemp(hourlyStats, day.date)
+  const midpoint =
+    day.tempMin != null && day.tempMax != null
+      ? (Number(day.tempMin) + Number(day.tempMax)) / 2
+      : null
+  return {
+    ...day,
+    tempAvg: fromHourly ?? midpoint,
   }
 }
 

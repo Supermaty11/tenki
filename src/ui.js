@@ -15,6 +15,13 @@ function fmtTemp(value) {
   return `${n}℃`
 }
 
+function fmtTempRange(day) {
+  if (!day) return '—'
+  const range = `${fmtTemp(day.tempMin)}〜${fmtTemp(day.tempMax)}`
+  if (day.tempAvg == null) return range
+  return `${range}（平均${fmtTemp(day.tempAvg)}）`
+}
+
 function fmtProb(value) {
   if (value == null) return '—'
   return `${Math.round(Number(value))}%`
@@ -257,7 +264,7 @@ function renderSummary(place, stats, onToggleFavorite) {
 
     const tempLine = document.createElement('div')
     tempLine.className = 'stat-today-temp'
-    tempLine.textContent = `${fmtTemp(today.tempMin)}〜${fmtTemp(today.tempMax)}`
+    tempLine.textContent = fmtTempRange(today)
 
     const precipLine = document.createElement('div')
     precipLine.className = 'stat-today-precip'
@@ -281,7 +288,7 @@ function renderSummary(place, stats, onToggleFavorite) {
 
     const tempLine = document.createElement('div')
     tempLine.className = 'stat-tomorrow-temp'
-    tempLine.textContent = `${fmtTemp(tomorrow.tempMin)}〜${fmtTemp(tomorrow.tempMax)}`
+    tempLine.textContent = fmtTempRange(tomorrow)
 
     const precipLine = document.createElement('div')
     precipLine.className = 'stat-tomorrow-precip'
