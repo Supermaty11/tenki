@@ -132,6 +132,52 @@ export function renderPlaceChoices(places, onPick) {
   summary.append(h2, list)
 }
 
+export function renderSuggestions(places, onPick) {
+  const list = document.querySelector('#suggestions')
+  list.replaceChildren()
+  if (!places.length) {
+    list.hidden = true
+    return
+  }
+
+  for (const place of places) {
+    const li = document.createElement('li')
+    const button = document.createElement('button')
+    button.type = 'button'
+    button.className = 'suggestion-item'
+    button.setAttribute('role', 'option')
+    button.textContent = place.label
+    button.addEventListener('mousedown', (event) => {
+      // blur より先に選ばせる
+      event.preventDefault()
+      onPick(place)
+    })
+    li.append(button)
+    list.append(li)
+  }
+  list.hidden = false
+}
+
+export function hideSuggestions() {
+  const list = document.querySelector('#suggestions')
+  list.replaceChildren()
+  list.hidden = true
+}
+
+export function renderEmptyResults() {
+  renderStatus('検索した地点の結果がここに出ます。')
+  const links = document.querySelector('#links')
+  links.replaceChildren()
+  const h2 = document.createElement('h2')
+  h2.textContent = '各サイト'
+  const p = document.createElement('p')
+  p.textContent = '予報の取得はせず、サイトを開くボタンを置きます。'
+  links.append(h2, p)
+
+  const attribution = document.querySelector('#attribution')
+  if (attribution) attribution.remove()
+}
+
 export function renderStats(place, stats, { onToggleFavorite } = {}) {
   renderSummary(place, stats, onToggleFavorite)
   renderHourly(stats.hourlyToday)
@@ -186,14 +232,15 @@ function renderSummary(place, stats, onToggleFavorite) {
   temp.textContent = fmtTemp(now?.temperature)
 
   mainRow.append(weather, temp)
-  hero.append(mainRow)
 
   if (stats.outlook) {
     const outlook = document.createElement('p')
     outlook.className = 'stat-outlook'
     outlook.textContent = stats.outlook
-    hero.append(outlook)
+    mainRow.append(outlook)
   }
+
+  hero.append(mainRow)
 
   const agree = document.createElement('p')
   agree.className = 'stat-agree'
