@@ -1,3 +1,6 @@
+import { isFavorite } from './favorites.js'
+import { buildSiteLinks } from './siteLinks.js'
+
 const WEATHER_ICONS = {
   晴: '☀️',
   曇: '☁️',
@@ -49,6 +52,43 @@ function weatherClass(category) {
   return category ? `wx-${category}` : ''
 }
 
+export function renderFavorites(favorites, { onSelect, onRemove }) {
+  const section = document.querySelector('#favorites')
+  section.replaceChildren()
+  const h2 = document.createElement('h2')
+  h2.textContent = 'お気に入り'
+  section.append(h2)
+
+  if (!favorites.length) {
+    const p = document.createElement('p')
+    p.textContent = '地点を表示したあと、☆で登録できます。'
+    section.append(p)
+    return
+  }
+
+  const list = document.createElement('ul')
+  list.className = 'favorite-list'
+  for (const place of favorites) {
+    const li = document.createElement('li')
+    const open = document.createElement('button')
+    open.type = 'button'
+    open.className = 'favorite-open'
+    open.textContent = place.label
+    open.addEventListener('click', () => onSelect(place))
+
+    const remove = document.createElement('button')
+    remove.type = 'button'
+    remove.className = 'favorite-remove'
+    remove.setAttribute('aria-label', `${place.label}をお気に入りから外す`)
+    remove.textContent = '×'
+    remove.addEventListener('click', () => onRemove(place))
+
+    li.append(open, remove)
+    list.append(li)
+  }
+  section.append(list)
+}
+
 export function renderStatus(message) {
   const summary = document.querySelector('#summary')
   summary.replaceChildren()
@@ -92,20 +132,36 @@ export function renderPlaceChoices(places, onPick) {
   summary.append(h2, list)
 }
 
-export function renderStats(place, stats) {
-  renderSummary(place, stats)
+export function renderStats(place, stats, { onToggleFavorite } = {}) {
+  renderSummary(place, stats, onToggleFavorite)
   renderHourly(stats.hourlyToday)
   renderWeekly(stats.weekly)
   renderLinks(place)
   renderAttribution()
 }
 
-function renderSummary(place, stats) {
+function renderSummary(place, stats, onToggleFavorite) {
   const summary = document.querySelector('#summary')
   summary.replaceChildren()
 
+  const heading = document.createElement('div')
+  heading.className = 'summary-heading'
+
   const h2 = document.createElement('h2')
   h2.textContent = '統計天気'
+  heading.append(h2)
+
+  if (onToggleFavorite) {
+    const fav = document.createElement('button')
+    fav.type = 'button'
+    fav.className = 'favorite-toggle'
+    const saved = isFavorite(place)
+    fav.setAttribute('aria-pressed', saved ? 'true' : 'false')
+    fav.setAttribute('aria-label', saved ? 'お気に入り解除' : 'お気に入り登録')
+    fav.textContent = saved ? '★' : '☆'
+    fav.addEventListener('click', () => onToggleFavorite(place))
+    heading.append(fav)
+  }
 
   const placeEl = document.createElement('p')
   placeEl.className = 'place-name'
@@ -138,15 +194,9 @@ function renderSummary(place, stats) {
     todayLine.textContent = '今日の日次集計はありません。'
   }
 
-  summary.append(h2, placeEl, main, agree, meta, todayLine)
+  summary.append(heading, placeEl, main, agree, meta, todayLine)
 }
 
-/**
- * 時系列を横軸にした表を作る。
- * @param {string[]} headers
- * @param {Array<{ label: string, values: string[] }>} rows
- * @param {(string|null)[]} categories 列ごとの天気カテゴリ
- */
 function buildTimelineTable(headers, rows, categories) {
   const wrap = document.createElement('div')
   wrap.className = 'timeline-scroll'
@@ -260,19 +310,11 @@ function renderLinks(place) {
   const h2 = document.createElement('h2')
   h2.textContent = '各サイト'
   const note = document.createElement('p')
-  note.textContent = '予報文は取得せず、サイトを開くだけです。'
+  note.textContent = '予報文は取得せず、地点つきのページを開きます。'
   const nav = document.createElement('nav')
   nav.className = 'site-links'
 
-  const q = encodeURIComponent(place.name)
-  const links = [
-    { label: 'tenki.jp', href: `https://tenki.jp/search/?word=${q}` },
-    { label: 'ウェザーニュース', href: `https://weathernews.jp/onebox/${place.latitude}/${place.longitude}/` },
-    { label: 'Yahoo!天気', href: `https://weather.yahoo.co.jp/weather/search/?p=${q}` },
-    { label: '気象庁', href: 'https://www.jma.go.jp/bosai/forecast/' },
-  ]
-
-  for (const link of links) {
+  for (const link of buildSiteLinks(place)) {
     const a = document.createElement('a')
     a.href = link.href
     a.target = '_blank'

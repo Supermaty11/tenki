@@ -1,13 +1,16 @@
 import './style.css'
 import { searchPlaces } from './geocode.js'
 import { fetchMultiModelForecast, buildStats } from './forecast.js'
-import { renderStatus, renderPlaceChoices, renderStats } from './ui.js'
+import { renderStatus, renderPlaceChoices, renderStats, renderFavorites } from './ui.js'
 import { initThemeControls } from './theme.js'
+import { listFavorites, toggleFavorite, isFavorite } from './favorites.js'
 
 initThemeControls(document.querySelector('#theme'))
+refreshFavorites()
 
 const form = document.querySelector('#search')
 let requestId = 0
+let currentPlace = null
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault()
@@ -45,15 +48,51 @@ form.addEventListener('submit', async (event) => {
 })
 
 async function loadForecast(place, id) {
+  currentPlace = place
   renderStatus(`${place.label} の予報を集計しています…`)
   try {
     const forecast = await fetchMultiModelForecast(place)
     if (id !== requestId) return
     const stats = buildStats(forecast)
-    renderStats(place, stats)
+    renderStats(place, stats, {
+      onToggleFavorite: handleToggleFavorite,
+    })
   } catch (error) {
     if (id !== requestId) return
     console.error(error)
     renderStatus(error.message || '予報の取得に失敗しました。')
   }
+}
+
+function handleToggleFavorite(place) {
+  toggleFavorite(place)
+  refreshFavorites()
+  const btn = document.querySelector('#summary .favorite-toggle')
+  if (btn && currentPlace) {
+    const saved = isFavorite(currentPlace)
+    btn.textContent = saved ? '★' : '☆'
+    btn.setAttribute('aria-pressed', saved ? 'true' : 'false')
+    btn.setAttribute('aria-label', saved ? 'お気に入り解除' : 'お気に入り登録')
+  }
+}
+
+function refreshFavorites() {
+  renderFavorites(listFavorites(), {
+    onSelect: (place) => {
+      document.querySelector('#query').value = place.searchName || place.name
+      void loadForecast(place, ++requestId)
+    },
+    onRemove: (place) => {
+      toggleFavorite(place)
+      refreshFavorites()
+      if (currentPlace && (currentPlace.id === place.id || currentPlace.label === place.label)) {
+        const btn = document.querySelector('#summary .favorite-toggle')
+        if (btn) {
+          btn.textContent = '☆'
+          btn.setAttribute('aria-pressed', 'false')
+          btn.setAttribute('aria-label', 'お気に入り登録')
+        }
+      }
+    },
+  })
 }
