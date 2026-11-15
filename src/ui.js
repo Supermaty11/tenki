@@ -384,9 +384,8 @@ function renderHourly(stats) {
   const localDate = stats.localDate
   const headers = rows.map((row) => fmtHourHeader(row.time, localDate))
   const categories = rows.map(weatherCategory)
-  const dayBreakIndexes = rows
-    .map((row, i) => (row.time.startsWith(localDate) ? -1 : i))
-    .filter((i) => i >= 0)
+  const firstTomorrowIndex = rows.findIndex((row) => !row.time.startsWith(localDate))
+  const dayBreakIndexes = firstTomorrowIndex >= 0 ? [firstTomorrowIndex] : []
   const scrollToIndex = Math.min(
     Math.max(stats.currentHourIndex || 0, 0),
     rows.length - 1,
