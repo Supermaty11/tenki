@@ -268,7 +268,7 @@ function renderSummary(place, stats, onToggleFavorite) {
 
     const precipLine = document.createElement('div')
     precipLine.className = 'stat-today-precip'
-    precipLine.textContent = `降水 ${fmtProb(today.precipProb)}`
+    precipLine.textContent = `降水確率 ${fmtProb(today.precipProb)}`
 
     todayLine.append(weatherLine, tempLine, precipLine)
   } else {
@@ -292,7 +292,7 @@ function renderSummary(place, stats, onToggleFavorite) {
 
     const precipLine = document.createElement('div')
     precipLine.className = 'stat-tomorrow-precip'
-    precipLine.textContent = `降水 ${fmtProb(tomorrow.precipProb)}`
+    precipLine.textContent = `降水確率 ${fmtProb(tomorrow.precipProb)}`
 
     tomorrowBlock.append(weatherLine, tempLine, precipLine)
     summary.append(tomorrowBlock)
