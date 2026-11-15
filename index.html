@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ja" data-theme="earth">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/tenki/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Statistical Weather</title>
+    <meta name="description" content="7モデル合意の統計天気" />
+    <meta property="og:title" content="Statistical Weather" />
+    <meta property="og:description" content="7モデル合意の統計天気" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Statistical Weather" />
+    <meta name="twitter:description" content="7モデル合意の統計天気" />
+    <script type="module" crossorigin src="/tenki/assets/index-CpzZtiJ8.js"></script>
+    <link rel="stylesheet" crossorigin href="/tenki/assets/index-XgRWWZtI.css">
+  </head>
+  <body>
+    <main id="app">
+      <header>
+        <div class="topbar">
+          <h1>天気</h1>
+          <div class="theme-picker">
+            <label for="theme">テーマ</label>
+            <select id="theme" name="theme"></select>
+          </div>
+        </div>
+        <form id="search">
+          <label for="query">地点</label>
+          <div class="search-field">
+            <input id="query" name="query" type="search" placeholder="地点を検索" autocomplete="off" />
+            <button id="clear" type="button" class="clear-btn" hidden aria-label="入力と結果をクリア">×</button>
+            <ul id="suggestions" class="suggestions" hidden role="listbox" aria-label="地点候補"></ul>
+          </div>
+          <button type="submit">検索</button>
+        </form>
+      </header>
+      <section id="favorites">
+        <h2>お気に入り</h2>
+        <p>地点を表示したあと、☆で登録できます。</p>
+      </section>
+      <section id="summary">
+        <h2>Statistical Weather</h2>
+        <p>検索した地点の結果がここに出ます。</p>
+      </section>
+      <section id="hourly">
+        <h2>時間別</h2>
+        <p>その日の時間別です。</p>
+      </section>
+      <section id="weekly">
+        <h2>週間</h2>
+        <p>週間の統計です。</p>
+      </section>
+      <section id="links">
+        <h2>各サイト</h2>
+      </section>
+    </main>
+  </body>
+</html>
