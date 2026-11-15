@@ -10,8 +10,7 @@ function fmtProb(value) {
 }
 
 function fmtHour(isoLocal) {
-  const hour = isoLocal.slice(11, 16)
-  return hour
+  return isoLocal.slice(11, 13)
 }
 
 function fmtDate(isoDate) {
@@ -26,6 +25,10 @@ function fmtDate(isoDate) {
 function weatherLabel(row) {
   if (!row?.weather?.category) return '—'
   return row.weather.category
+}
+
+function agreementShort(row) {
+  return row?.agreementShort || '—'
 }
 
 export function renderStatus(message) {
@@ -119,6 +122,54 @@ function renderSummary(place, stats) {
   summary.append(h2, placeEl, main, agree, meta, todayLine)
 }
 
+/**
+ * 時系列を横軸にした表を作る。
+ * @param {Array<{ label: string, values: string[] }>} rows
+ * @param {string[]} headers
+ */
+function buildTimelineTable(headers, rows) {
+  const wrap = document.createElement('div')
+  wrap.className = 'timeline-scroll'
+  wrap.setAttribute('tabindex', '0')
+  wrap.setAttribute('role', 'region')
+
+  const table = document.createElement('table')
+  table.className = 'wx-table wx-timeline'
+
+  const thead = document.createElement('thead')
+  const headRow = document.createElement('tr')
+  const corner = document.createElement('th')
+  corner.className = 'sticky-col'
+  corner.textContent = ''
+  headRow.append(corner)
+  for (const header of headers) {
+    const th = document.createElement('th')
+    th.textContent = header
+    headRow.append(th)
+  }
+  thead.append(headRow)
+
+  const tbody = document.createElement('tbody')
+  for (const row of rows) {
+    const tr = document.createElement('tr')
+    const label = document.createElement('th')
+    label.scope = 'row'
+    label.className = 'sticky-col'
+    label.textContent = row.label
+    tr.append(label)
+    for (const value of row.values) {
+      const td = document.createElement('td')
+      td.textContent = value
+      tr.append(td)
+    }
+    tbody.append(tr)
+  }
+
+  table.append(thead, tbody)
+  wrap.append(table)
+  return wrap
+}
+
 function renderHourly(rows) {
   const section = document.querySelector('#hourly')
   section.replaceChildren()
@@ -133,23 +184,14 @@ function renderHourly(rows) {
     return
   }
 
-  const table = document.createElement('table')
-  table.className = 'wx-table'
-  const thead = document.createElement('thead')
-  thead.innerHTML = '<tr><th>時刻</th><th>天気</th><th>一致</th><th>気温</th><th>降水</th></tr>'
-  const tbody = document.createElement('tbody')
-  for (const row of rows) {
-    const tr = document.createElement('tr')
-    tr.innerHTML = `
-      <td>${fmtHour(row.time)}</td>
-      <td>${weatherLabel(row)}</td>
-      <td>${row.agreement}</td>
-      <td>${fmtTemp(row.temperature)}</td>
-      <td>${fmtProb(row.precipProb)}</td>
-    `
-    tbody.append(tr)
-  }
-  table.append(thead, tbody)
+  const headers = rows.map((row) => fmtHour(row.time))
+  const table = buildTimelineTable(headers, [
+    { label: '天気', values: rows.map(weatherLabel) },
+    { label: '気温', values: rows.map((row) => fmtTemp(row.temperature)) },
+    { label: '降水', values: rows.map((row) => fmtProb(row.precipProb)) },
+    { label: '一致', values: rows.map(agreementShort) },
+  ])
+  table.setAttribute('aria-label', '時間別予報')
   section.append(table)
 }
 
@@ -167,23 +209,14 @@ function renderWeekly(rows) {
     return
   }
 
-  const table = document.createElement('table')
-  table.className = 'wx-table'
-  const thead = document.createElement('thead')
-  thead.innerHTML = '<tr><th>日</th><th>天気</th><th>一致</th><th>気温</th><th>降水</th></tr>'
-  const tbody = document.createElement('tbody')
-  for (const row of rows) {
-    const tr = document.createElement('tr')
-    tr.innerHTML = `
-      <td>${fmtDate(row.date)}</td>
-      <td>${weatherLabel(row)}</td>
-      <td>${row.agreement}</td>
-      <td>${fmtTemp(row.tempMin)}〜${fmtTemp(row.tempMax)}</td>
-      <td>${fmtProb(row.precipProb)}</td>
-    `
-    tbody.append(tr)
-  }
-  table.append(thead, tbody)
+  const headers = rows.map((row) => fmtDate(row.date))
+  const table = buildTimelineTable(headers, [
+    { label: '天気', values: rows.map(weatherLabel) },
+    { label: '気温', values: rows.map((row) => `${fmtTemp(row.tempMin)}/${fmtTemp(row.tempMax)}`) },
+    { label: '降水', values: rows.map((row) => fmtProb(row.precipProb)) },
+    { label: '一致', values: rows.map(agreementShort) },
+  ])
+  table.setAttribute('aria-label', '週間予報')
   section.append(table)
 }
 

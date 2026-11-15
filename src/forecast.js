@@ -1,5 +1,5 @@
 import { MODEL_IDS } from './models.js'
-import { majorityWeather, median, formatAgreement } from './aggregate.js'
+import { majorityWeather, median, formatAgreement, formatAgreementShort } from './aggregate.js'
 
 const FORECAST_URL = 'https://api.open-meteo.com/v1/forecast'
 
@@ -23,6 +23,7 @@ function aggregateHour(hourly, index) {
     time: hourly.time[index],
     weather,
     agreement: formatAgreement(weather),
+    agreementShort: formatAgreementShort(weather),
     temperature,
     precipProb,
   }
@@ -38,6 +39,7 @@ function aggregateDay(daily, index) {
     date: daily.time[index],
     weather,
     agreement: formatAgreement(weather),
+    agreementShort: formatAgreementShort(weather),
     tempMax,
     tempMin,
     precipProb,

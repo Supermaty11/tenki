@@ -48,3 +48,9 @@ export function formatAgreement({ votes, total, category }) {
   if (!category || total === 0) return 'データなし'
   return `${total}件中${votes}件が${category}`
 }
+
+/** 表用の短い一致表記。例: 5/7 */
+export function formatAgreementShort({ votes, total }) {
+  if (!total) return '—'
+  return `${votes}/${total}`
+}

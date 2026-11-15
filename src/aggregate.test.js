@@ -1,4 +1,4 @@
-import { median, majorityWeather, formatAgreement } from './aggregate.js'
+import { median, majorityWeather, formatAgreement, formatAgreementShort } from './aggregate.js'
 import { categorizeWeatherCode } from './weatherCode.js'
 
 function assert(cond, msg) {
@@ -21,6 +21,7 @@ assert(rainMajority.category === '雨', 'majority rain')
 // 61×3 + 80 → 雨4、曇1、晴1（null除外で total=6）
 assert(rainMajority.votes === 4 && rainMajority.total === 6, 'majority counts exclude null')
 assert(formatAgreement(rainMajority) === '6件中4件が雨', 'agreement text')
+assert(formatAgreementShort(rainMajority) === '4/6', 'short agreement')
 
 // 同数: 雨2 / 晴2 → 雨が勝つ
 const tie = majorityWeather([61, 61, 0, 0])

@@ -2,6 +2,9 @@ import './style.css'
 import { searchPlaces } from './geocode.js'
 import { fetchMultiModelForecast, buildStats } from './forecast.js'
 import { renderStatus, renderPlaceChoices, renderStats } from './ui.js'
+import { initThemeControls } from './theme.js'
+
+initThemeControls(document.querySelector('#theme'))
 
 const form = document.querySelector('#search')
 let requestId = 0

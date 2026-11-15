@@ -1,17 +1,111 @@
+/* テーマは data-theme で切替。初期はアース。 */
+:root,
+:root[data-theme='earth'] {
+  --bg: #e8e0d4;
+  --bg-accent: #d9cfc0;
+  --surface: #f3ece3;
+  --text: #2c241c;
+  --muted: #6b5e52;
+  --border: #cbbba8;
+  --input-bg: #faf6f1;
+  --accent: #4a5c3a;
+  --accent-hover: #3b4a2e;
+  --accent-text: #f4f1ea;
+  --sticky-bg: #f3ece3;
+  --table-line: #ddd0c0;
+  --shadow: color-mix(in srgb, #2c241c 8%, transparent);
+}
+
+:root[data-theme='moss'] {
+  --bg: #dce5d6;
+  --bg-accent: #c9d6c0;
+  --surface: #eef3e9;
+  --text: #243022;
+  --muted: #556352;
+  --border: #b4c3ab;
+  --input-bg: #f7faf5;
+  --accent: #3f5d45;
+  --accent-hover: #334c38;
+  --accent-text: #f3f7f1;
+  --sticky-bg: #eef3e9;
+  --table-line: #c9d5c2;
+  --shadow: color-mix(in srgb, #243022 8%, transparent);
+}
+
+:root[data-theme='clay'] {
+  --bg: #e6ddd6;
+  --bg-accent: #d5c7bc;
+  --surface: #f2ebe5;
+  --text: #322820;
+  --muted: #6e5f54;
+  --border: #c9b8aa;
+  --input-bg: #faf7f4;
+  --accent: #6b4f3a;
+  --accent-hover: #573f2e;
+  --accent-text: #f7f2ec;
+  --sticky-bg: #f2ebe5;
+  --table-line: #d8c9bc;
+  --shadow: color-mix(in srgb, #322820 8%, transparent);
+}
+
 :root {
-  color: #1c1917;
-  background: #f6f3ee;
-  font: 16px/1.5 system-ui, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(120% 80% at 10% -10%, var(--bg-accent), transparent 55%),
+    radial-gradient(90% 60% at 100% 0%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 50%),
+    var(--bg);
+  font: 16px/1.5 "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", sans-serif;
+  min-height: 100%;
 }
 
 body {
   margin: 0;
+  min-height: 100vh;
 }
 
 #app {
-  max-width: 40rem;
+  max-width: 44rem;
   margin: 0 auto;
   padding: 1.5rem 1rem 3rem;
+}
+
+.topbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.topbar h1 {
+  margin: 0;
+}
+
+.theme-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+
+.theme-picker label {
+  position: static;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip: auto;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.theme-picker select {
+  font: inherit;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 0.45rem;
+  background: var(--input-bg);
+  color: var(--text);
 }
 
 h1,
@@ -21,7 +115,6 @@ h2 {
 }
 
 h1 {
-  margin: 0 0 1rem;
   font-size: 1.5rem;
 }
 
@@ -40,7 +133,8 @@ form {
   align-items: center;
 }
 
-label {
+label.sr-only,
+form label {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -49,8 +143,7 @@ label {
 }
 
 input,
-button,
-a.site-link {
+button {
   font: inherit;
 }
 
@@ -58,17 +151,18 @@ input {
   flex: 1;
   min-width: 0;
   padding: 0.55rem 0.7rem;
-  border: 1px solid #d6d3d1;
+  border: 1px solid var(--border);
   border-radius: 0.5rem;
-  background: #fff;
+  background: var(--input-bg);
+  color: var(--text);
 }
 
 button {
   padding: 0.55rem 0.9rem;
   border: 0;
   border-radius: 0.5rem;
-  background: #1f3d32;
-  color: #fff;
+  background: var(--accent);
+  color: var(--accent-text);
   cursor: pointer;
 }
 
@@ -81,12 +175,13 @@ section {
   margin-top: 1.25rem;
   padding: 1rem;
   border-radius: 0.75rem;
-  background: #fff;
+  background: var(--surface);
+  box-shadow: 0 1px 0 var(--shadow);
 }
 
 .place-name {
   margin-bottom: 0.5rem;
-  color: #57534e;
+  color: var(--muted);
   font-size: 0.95rem;
 }
 
@@ -99,7 +194,7 @@ section {
 .stat-meta,
 .stat-today {
   margin-top: 0.25rem;
-  color: #44403c;
+  color: var(--muted);
 }
 
 .place-list {
@@ -113,32 +208,64 @@ section {
 .place-choice {
   width: 100%;
   text-align: left;
-  background: #f5f5f4;
-  color: #1c1917;
+  background: color-mix(in srgb, var(--bg-accent) 70%, var(--surface));
+  color: var(--text);
 }
 
 .place-choice:hover {
-  background: #e7e5e4;
+  background: var(--bg-accent);
+}
+
+.timeline-scroll {
+  margin-top: 0.5rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
 }
 
 .wx-table {
-  width: 100%;
-  margin-top: 0.5rem;
-  border-collapse: collapse;
-  font-size: 0.9rem;
+  width: max-content;
+  min-width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.88rem;
 }
 
-.wx-table th,
-.wx-table td {
-  padding: 0.35rem 0.25rem;
-  border-bottom: 1px solid #e7e5e4;
-  text-align: left;
-  vertical-align: top;
+.wx-timeline th,
+.wx-timeline td {
+  padding: 0.45rem 0.55rem;
+  border-bottom: 1px solid var(--table-line);
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
 }
 
-.wx-table th {
-  color: #78716c;
+.wx-timeline thead th {
+  color: var(--muted);
   font-weight: 500;
+  background: color-mix(in srgb, var(--surface) 85%, var(--bg-accent));
+}
+
+.wx-timeline tbody tr:last-child th,
+.wx-timeline tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.wx-timeline .sticky-col {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  text-align: left;
+  background: var(--sticky-bg);
+  box-shadow: 1px 0 0 var(--table-line);
+  font-weight: 500;
+}
+
+.wx-timeline thead .sticky-col {
+  z-index: 2;
+  background: color-mix(in srgb, var(--surface) 85%, var(--bg-accent));
 }
 
 .site-links {
@@ -152,28 +279,21 @@ section {
   display: inline-block;
   padding: 0.45rem 0.75rem;
   border-radius: 0.5rem;
-  background: #1f3d32;
-  color: #fff;
+  background: var(--accent);
+  color: var(--accent-text);
   text-decoration: none;
   font-size: 0.9rem;
 }
 
 .site-links a:hover {
-  background: #163028;
+  background: var(--accent-hover);
 }
 
 #attribution p {
   font-size: 0.85rem;
-  color: #57534e;
+  color: var(--muted);
 }
 
 #attribution a {
-  color: #1f3d32;
-}
-
-@media (max-width: 40rem) {
-  .wx-table {
-    display: block;
-    overflow-x: auto;
-  }
+  color: var(--accent);
 }
