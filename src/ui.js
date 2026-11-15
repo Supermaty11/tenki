@@ -251,7 +251,13 @@ function renderSummary(place, stats, onToggleFavorite) {
   const todayLine = document.createElement('p')
   todayLine.className = 'stat-today'
   if (today) {
-    todayLine.textContent = `今日 ${weatherLabel(today)}（${today.agreement}） / ${fmtTemp(today.tempMin)}〜${fmtTemp(today.tempMax)} / 降水 ${fmtProb(today.precipProb)}`
+    const line1 = document.createElement('span')
+    line1.className = 'stat-today-main'
+    line1.textContent = `今日 ${weatherLabel(today)}（${today.agreement}） / ${fmtTemp(today.tempMin)}〜${fmtTemp(today.tempMax)}`
+    const line2 = document.createElement('span')
+    line2.className = 'stat-today-precip'
+    line2.textContent = `降水 ${fmtProb(today.precipProb)}`
+    todayLine.append(line1, line2)
   } else {
     todayLine.textContent = '今日の日次集計はありません。'
   }

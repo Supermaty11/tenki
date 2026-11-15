@@ -372,6 +372,12 @@ section {
   color: var(--muted);
 }
 
+.stat-today {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
 .place-list {
   margin: 0.5rem 0 0;
   padding: 0;
